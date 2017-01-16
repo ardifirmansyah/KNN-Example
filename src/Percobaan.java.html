@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Percobaan.java</title>
+<link rel="stylesheet" type="text/css" href="highlight.css">
+</head>
+<body class="hl">
+<pre class="hl">
+<span class="hl kwa">import</span> java<span class="hl opt">.</span>io<span class="hl opt">.</span>File<span class="hl opt">;</span>
+<span class="hl kwa">import</span> java<span class="hl opt">.</span>io<span class="hl opt">.</span>IOException<span class="hl opt">;</span>
+<span class="hl kwa">import</span> java<span class="hl opt">.</span>util<span class="hl opt">.</span>ArrayList<span class="hl opt">;</span>
+<span class="hl kwa">import</span> java<span class="hl opt">.</span>util<span class="hl opt">.</span>Collections<span class="hl opt">;</span>
+<span class="hl kwa">import</span> java<span class="hl opt">.</span>util<span class="hl opt">.</span>Comparator<span class="hl opt">;</span>
+<span class="hl kwa">import</span> java<span class="hl opt">.</span>util<span class="hl opt">.</span>List<span class="hl opt">;</span>
+<span class="hl kwa">import</span> jxl<span class="hl opt">.</span>Cell<span class="hl opt">;</span>
+<span class="hl kwa">import</span> jxl<span class="hl opt">.</span>Sheet<span class="hl opt">;</span>
+<span class="hl kwa">import</span> jxl<span class="hl opt">.</span>Workbook<span class="hl opt">;</span>
+<span class="hl kwa">import</span> jxl<span class="hl opt">.</span>read<span class="hl opt">.</span>biff<span class="hl opt">.</span>BiffException<span class="hl opt">;</span>
+
+<span class="hl com">/*</span>
+<span class="hl com"> * To change this license header, choose License Headers in Project Properties.</span>
+<span class="hl com"> * To change this template file, choose Tools | Templates</span>
+<span class="hl com"> * and open the template in the editor.</span>
+<span class="hl com"> */</span>
+
+<span class="hl com">/**</span>
+<span class="hl com"> *</span>
+<span class="hl com"> * &#64;author ardifirmansyah</span>
+<span class="hl com"> */</span>
+<span class="hl kwa">public class</span> Percobaan <span class="hl opt">{</span>
+    <span class="hl kwa">public static</span> <span class="hl kwb">double</span> dataTrain<span class="hl opt">[][];</span>
+    <span class="hl kwa">public static</span> <span class="hl kwb">double</span> dataTest<span class="hl opt">[][];</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">int</span> binerTrain<span class="hl opt">[];</span>
+    <span class="hl kwa">public static</span> <span class="hl kwb">int</span> binerTest<span class="hl opt">[];</span>
+    <span class="hl kwa">public static</span> <span class="hl kwb">int</span> hasilKNN<span class="hl opt">[];</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">int</span> banyakSample<span class="hl opt">;</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">void</span> <span class="hl kwd">AmbilDataTrain</span><span class="hl opt">()</span> <span class="hl kwa">throws</span> IOException<span class="hl opt">,</span> BiffException <span class="hl opt">{</span>
+            <span class="hl com">/* Mengambil data train pada file DataTrain.xls */</span>
+        Workbook w <span class="hl opt">=</span> Workbook<span class="hl opt">.</span><span class="hl kwd">getWorkbook</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">File</span><span class="hl opt">(</span><span class="hl str">&quot;Data_Train.xls&quot;</span><span class="hl opt">));</span>
+        Sheet s <span class="hl opt">=</span> w<span class="hl opt">.</span><span class="hl kwd">getSheet</span><span class="hl opt">(</span><span class="hl num">0</span><span class="hl opt">);</span>
+        dataTrain <span class="hl opt">=</span> <span class="hl kwa">new</span> <span class="hl kwb">double</span><span class="hl opt">[</span>s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">()][</span>s<span class="hl opt">.</span><span class="hl kwd">getColumns</span><span class="hl opt">() -</span> <span class="hl num">1</span><span class="hl opt">];</span>
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> baris <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> baris <span class="hl opt">&lt;</span> s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">();</span> baris<span class="hl opt">++) {</span>
+            <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> kolom <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> kolom <span class="hl opt">&lt;</span> s<span class="hl opt">.</span><span class="hl kwd">getColumns</span><span class="hl opt">() -</span> <span class="hl num">1</span><span class="hl opt">;</span> kolom<span class="hl opt">++) {</span>
+                Cell data <span class="hl opt">=</span> s<span class="hl opt">.</span><span class="hl kwd">getCell</span><span class="hl opt">(</span>kolom<span class="hl opt">,</span>baris<span class="hl opt">);</span>
+                dataTrain<span class="hl opt">[</span>baris<span class="hl opt">][</span>kolom<span class="hl opt">] =</span> Double<span class="hl opt">.</span><span class="hl kwd">parseDouble</span><span class="hl opt">(</span>data<span class="hl opt">.</span><span class="hl kwd">getContents</span><span class="hl opt">());</span>
+            <span class="hl opt">}</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">void</span> <span class="hl kwd">AmbilBinerTrain</span><span class="hl opt">()</span> <span class="hl kwa">throws</span> IOException<span class="hl opt">,</span> BiffException <span class="hl opt">{</span>
+            <span class="hl com">/* Mengambil data train pada file DataTrain.xls */</span>
+        Workbook w <span class="hl opt">=</span> Workbook<span class="hl opt">.</span><span class="hl kwd">getWorkbook</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">File</span><span class="hl opt">(</span><span class="hl str">&quot;Data_Train.xls&quot;</span><span class="hl opt">));</span>
+        Sheet s <span class="hl opt">=</span> w<span class="hl opt">.</span><span class="hl kwd">getSheet</span><span class="hl opt">(</span><span class="hl num">0</span><span class="hl opt">);</span>
+        binerTrain <span class="hl opt">=</span> <span class="hl kwa">new</span> <span class="hl kwb">int</span><span class="hl opt">[</span>s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">()];</span>
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> baris <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> baris <span class="hl opt">&lt;</span> s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">();</span> baris<span class="hl opt">++) {</span>
+            Cell data <span class="hl opt">=</span> s<span class="hl opt">.</span><span class="hl kwd">getCell</span><span class="hl opt">(</span><span class="hl num">10</span><span class="hl opt">,</span>baris<span class="hl opt">);</span>
+            binerTrain<span class="hl opt">[</span>baris<span class="hl opt">] =</span> Integer<span class="hl opt">.</span><span class="hl kwd">parseInt</span><span class="hl opt">(</span>data<span class="hl opt">.</span><span class="hl kwd">getContents</span><span class="hl opt">());</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">void</span> <span class="hl kwd">AmbilDataTest</span><span class="hl opt">()</span> <span class="hl kwa">throws</span> IOException<span class="hl opt">,</span> BiffException <span class="hl opt">{</span>
+            <span class="hl com">/* Mengambil data train pada file DataTrain.xls */</span>
+        Workbook w <span class="hl opt">=</span> Workbook<span class="hl opt">.</span><span class="hl kwd">getWorkbook</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">File</span><span class="hl opt">(</span><span class="hl str">&quot;Data_Test.xls&quot;</span><span class="hl opt">));</span>
+        Sheet s <span class="hl opt">=</span> w<span class="hl opt">.</span><span class="hl kwd">getSheet</span><span class="hl opt">(</span><span class="hl num">0</span><span class="hl opt">);</span>
+        dataTest <span class="hl opt">=</span> <span class="hl kwa">new</span> <span class="hl kwb">double</span><span class="hl opt">[</span>s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">()][</span>s<span class="hl opt">.</span><span class="hl kwd">getColumns</span><span class="hl opt">() -</span> <span class="hl num">1</span><span class="hl opt">];</span>
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> baris <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> baris <span class="hl opt">&lt;</span> s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">();</span> baris<span class="hl opt">++) {</span>
+            <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> kolom <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> kolom <span class="hl opt">&lt;</span> s<span class="hl opt">.</span><span class="hl kwd">getColumns</span><span class="hl opt">() -</span> <span class="hl num">1</span><span class="hl opt">;</span> kolom<span class="hl opt">++) {</span>
+                Cell data <span class="hl opt">=</span> s<span class="hl opt">.</span><span class="hl kwd">getCell</span><span class="hl opt">(</span>kolom<span class="hl opt">,</span>baris<span class="hl opt">);</span>
+                dataTest<span class="hl opt">[</span>baris<span class="hl opt">][</span>kolom<span class="hl opt">] =</span> Double<span class="hl opt">.</span><span class="hl kwd">parseDouble</span><span class="hl opt">(</span>data<span class="hl opt">.</span><span class="hl kwd">getContents</span><span class="hl opt">());</span>
+            <span class="hl opt">}</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">void</span> <span class="hl kwd">AmbilBinerTest</span><span class="hl opt">()</span> <span class="hl kwa">throws</span> IOException<span class="hl opt">,</span> BiffException <span class="hl opt">{</span>
+            <span class="hl com">/* Mengambil data train pada file DataTrain.xls */</span>
+        Workbook w <span class="hl opt">=</span> Workbook<span class="hl opt">.</span><span class="hl kwd">getWorkbook</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">File</span><span class="hl opt">(</span><span class="hl str">&quot;Data_Test.xls&quot;</span><span class="hl opt">));</span>
+        Sheet s <span class="hl opt">=</span> w<span class="hl opt">.</span><span class="hl kwd">getSheet</span><span class="hl opt">(</span><span class="hl num">0</span><span class="hl opt">);</span>
+        binerTest <span class="hl opt">=</span> <span class="hl kwa">new</span> <span class="hl kwb">int</span><span class="hl opt">[</span>s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">()];</span>
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> baris <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> baris <span class="hl opt">&lt;</span> s<span class="hl opt">.</span><span class="hl kwd">getRows</span><span class="hl opt">();</span> baris<span class="hl opt">++) {</span>
+            Cell data <span class="hl opt">=</span> s<span class="hl opt">.</span><span class="hl kwd">getCell</span><span class="hl opt">(</span><span class="hl num">10</span><span class="hl opt">,</span>baris<span class="hl opt">);</span>
+            binerTest<span class="hl opt">[</span>baris<span class="hl opt">] =</span> Integer<span class="hl opt">.</span><span class="hl kwd">parseInt</span><span class="hl opt">(</span>data<span class="hl opt">.</span><span class="hl kwd">getContents</span><span class="hl opt">());</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">int</span> <span class="hl kwd">findMajorityClass</span><span class="hl opt">(</span><span class="hl kwb">int</span><span class="hl opt">[]</span> array<span class="hl opt">) {</span>
+            <span class="hl com">/* Mencari class dominan dalam range tetangga terdekat */</span> 
+        <span class="hl kwb">int</span> jumlahSatu <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span>
+        <span class="hl kwb">int</span> jumlahNol <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span>
+        
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> i <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> i <span class="hl opt">&lt;</span> array<span class="hl opt">.</span>length<span class="hl opt">;</span> i<span class="hl opt">++) {</span>
+            <span class="hl kwa">if</span> <span class="hl opt">(</span>array<span class="hl opt">[</span>i<span class="hl opt">] ==</span> <span class="hl num">1</span><span class="hl opt">) {</span>
+                jumlahSatu <span class="hl opt">+=</span> <span class="hl num">1</span><span class="hl opt">;</span>
+            <span class="hl opt">}</span>
+            <span class="hl kwa">else if</span> <span class="hl opt">(</span>array<span class="hl opt">[</span>i<span class="hl opt">] ==</span> <span class="hl num">0</span><span class="hl opt">) {</span>
+                jumlahNol <span class="hl opt">+=</span><span class="hl num">1</span><span class="hl opt">;</span>
+            <span class="hl opt">}</span>
+        <span class="hl opt">}</span>
+        <span class="hl kwa">if</span> <span class="hl opt">(</span>jumlahSatu <span class="hl opt">&gt;</span> jumlahNol<span class="hl opt">) {</span>
+            <span class="hl kwa">return</span> <span class="hl num">1</span><span class="hl opt">;</span>
+        <span class="hl opt">}</span>
+        <span class="hl kwa">else</span> <span class="hl opt">{</span>
+            <span class="hl kwa">return</span> <span class="hl num">0</span><span class="hl opt">;</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">int</span> <span class="hl kwd">proses</span><span class="hl opt">(</span><span class="hl kwb">double</span><span class="hl opt">[]</span> query<span class="hl opt">,</span> List<span class="hl opt">&lt;</span>Kasus<span class="hl opt">&gt;</span> kasusList<span class="hl opt">,</span> <span class="hl kwb">int</span> k<span class="hl opt">) {</span>
+        List<span class="hl opt">&lt;</span>Result<span class="hl opt">&gt;</span> resultList <span class="hl opt">=</span> <span class="hl kwa">new</span> ArrayList<span class="hl opt">&lt;</span>Result<span class="hl opt">&gt;();</span>
+        
+        <span class="hl kwa">for</span> <span class="hl opt">(</span>Kasus kasus <span class="hl opt">:</span> kasusList<span class="hl opt">) {</span>
+            <span class="hl kwb">double</span> dist <span class="hl opt">=</span> <span class="hl num">0.0</span><span class="hl opt">;</span>
+            <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> j <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> j <span class="hl opt">&lt;</span> kasus<span class="hl opt">.</span>atributKasus<span class="hl opt">.</span>length<span class="hl opt">;</span> j<span class="hl opt">++) {</span>
+                dist <span class="hl opt">+=</span> Math<span class="hl opt">.</span><span class="hl kwd">pow</span><span class="hl opt">(</span>kasus<span class="hl opt">.</span>atributKasus<span class="hl opt">[</span>j<span class="hl opt">] -</span> query<span class="hl opt">[</span>j<span class="hl opt">],</span> <span class="hl num">2</span><span class="hl opt">);</span>
+            <span class="hl opt">}</span>
+            <span class="hl kwb">double</span> distance <span class="hl opt">=</span> Math<span class="hl opt">.</span><span class="hl kwd">sqrt</span><span class="hl opt">(</span>dist<span class="hl opt">);</span>
+            resultList<span class="hl opt">.</span><span class="hl kwd">add</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">Result</span><span class="hl opt">(</span>kasus<span class="hl opt">.</span>atributKasus<span class="hl opt">,</span>distance<span class="hl opt">,</span>kasus<span class="hl opt">.</span>biner<span class="hl opt">));</span>
+        <span class="hl opt">}</span>
+        Collections<span class="hl opt">.</span><span class="hl kwd">sort</span><span class="hl opt">(</span>resultList<span class="hl opt">,</span> <span class="hl kwa">new</span> <span class="hl kwd">DistanceComparator</span><span class="hl opt">());</span>
+        <span class="hl kwb">int</span><span class="hl opt">[]</span> ii <span class="hl opt">=</span> <span class="hl kwa">new</span> <span class="hl kwb">int</span><span class="hl opt">[</span>k<span class="hl opt">];</span>
+<span class="hl slc">//        System.out.println(k + &quot; tetangga terdekat adalah :&quot;);</span>
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> x <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> x <span class="hl opt">&lt;</span> k<span class="hl opt">;</span> x<span class="hl opt">++) {</span>
+<span class="hl slc">//            for (int i = 0; i &lt; resultList.get(x).atribut.length; i++) {</span>
+<span class="hl slc">//                System.out.print(resultList.get(x).atribut[i] + &quot; | &quot;);</span>
+<span class="hl slc">//            }</span>
+<span class="hl slc">//            System.out.print(&quot;--&gt; &quot;);</span>
+<span class="hl slc">//            System.out.println(resultList.get(x).biner + &quot; dengan jarak : &quot; + </span>
+<span class="hl slc">//                    resultList.get(x).distance);</span>
+            ii<span class="hl opt">[</span>x<span class="hl opt">] =</span> resultList<span class="hl opt">.</span><span class="hl kwd">get</span><span class="hl opt">(</span>x<span class="hl opt">).</span>biner<span class="hl opt">;</span>
+        <span class="hl opt">}</span>
+        <span class="hl kwb">int</span> majClass <span class="hl opt">=</span> <span class="hl kwd">findMajorityClass</span><span class="hl opt">(</span>ii<span class="hl opt">);</span>
+        <span class="hl kwa">return</span> majClass<span class="hl opt">;</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">public static</span> <span class="hl kwb">void</span> <span class="hl kwd">main</span><span class="hl opt">(</span>String<span class="hl opt">[]</span> args<span class="hl opt">)</span> <span class="hl kwa">throws</span> IOException<span class="hl opt">,</span> BiffException <span class="hl opt">{</span>
+        <span class="hl kwb">int</span> k <span class="hl opt">=</span> <span class="hl num">17</span><span class="hl opt">;</span> <span class="hl slc">// # of neighbours</span>
+        <span class="hl kwb">double</span><span class="hl opt">[]</span> query<span class="hl opt">;</span>
+        <span class="hl kwb">int</span> jumlahBenar <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span>
+        <span class="hl kwb">int</span> totalSample<span class="hl opt">;</span>
+        
+        List<span class="hl opt">&lt;</span>Kasus<span class="hl opt">&gt;</span> kasusList <span class="hl opt">=</span> <span class="hl kwa">new</span> ArrayList<span class="hl opt">&lt;</span>Kasus<span class="hl opt">&gt;();</span>
+        List<span class="hl opt">&lt;</span>Kasus<span class="hl opt">&gt;</span> testList <span class="hl opt">=</span> <span class="hl kwa">new</span> ArrayList<span class="hl opt">&lt;</span>Kasus<span class="hl opt">&gt;();</span>
+<span class="hl slc">//        List&lt;Kasus&gt; akurasiList = new ArrayList&lt;Kasus&gt;();</span>
+        
+        <span class="hl kwd">AmbilDataTrain</span><span class="hl opt">();</span>
+        <span class="hl kwd">AmbilBinerTrain</span><span class="hl opt">();</span>
+        <span class="hl kwd">AmbilDataTest</span><span class="hl opt">();</span>
+        <span class="hl kwd">AmbilBinerTest</span><span class="hl opt">();</span>
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> baris <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> baris <span class="hl opt">&lt;</span> dataTrain<span class="hl opt">.</span>length<span class="hl opt">;</span> baris<span class="hl opt">++) {</span>
+            kasusList<span class="hl opt">.</span><span class="hl kwd">add</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">Kasus</span><span class="hl opt">(</span>dataTrain<span class="hl opt">[</span>baris<span class="hl opt">],</span>binerTrain<span class="hl opt">[</span>baris<span class="hl opt">]));</span>
+        <span class="hl opt">}</span>
+        
+        <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> baris <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> baris <span class="hl opt">&lt;</span> dataTest<span class="hl opt">.</span>length<span class="hl opt">;</span> baris<span class="hl opt">++) {</span>
+            testList<span class="hl opt">.</span><span class="hl kwd">add</span><span class="hl opt">(</span><span class="hl kwa">new</span> <span class="hl kwd">Kasus</span><span class="hl opt">(</span>dataTest<span class="hl opt">[</span>baris<span class="hl opt">],</span>binerTest<span class="hl opt">[</span>baris<span class="hl opt">]));</span>
+        <span class="hl opt">}</span>
+        
+        <span class="hl kwa">for</span> <span class="hl opt">(</span>Kasus kasus <span class="hl opt">:</span> testList<span class="hl opt">) {</span>
+            query <span class="hl opt">=</span> kasus<span class="hl opt">.</span>atributKasus<span class="hl opt">;</span>
+            <span class="hl kwb">int</span> binerBaru <span class="hl opt">=</span> <span class="hl kwd">proses</span><span class="hl opt">(</span>query<span class="hl opt">,</span> kasusList<span class="hl opt">,</span> k<span class="hl opt">);</span>
+            kasus<span class="hl opt">.</span>predicted <span class="hl opt">=</span> binerBaru<span class="hl opt">;</span>        <span class="hl slc">// memasukkan hasil knn kedalam variable predicted</span>
+            <span class="hl kwa">for</span> <span class="hl opt">(</span><span class="hl kwb">int</span> z <span class="hl opt">=</span> <span class="hl num">0</span><span class="hl opt">;</span> z <span class="hl opt">&lt;</span> kasus<span class="hl opt">.</span>atributKasus<span class="hl opt">.</span>length<span class="hl opt">;</span> z<span class="hl opt">++) {</span>
+                System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span>kasus<span class="hl opt">.</span>atributKasus<span class="hl opt">[</span>z<span class="hl opt">] +</span> <span class="hl str">&quot;</span><span class="hl esc">\t</span><span class="hl str">|</span><span class="hl esc">\t</span><span class="hl str">&quot;</span><span class="hl opt">);</span>
+            <span class="hl opt">}</span>
+            <span class="hl kwa">if</span> <span class="hl opt">(</span>kasus<span class="hl opt">.</span>biner <span class="hl opt">==</span> kasus<span class="hl opt">.</span>predicted<span class="hl opt">) {</span>
+                jumlahBenar <span class="hl opt">+=</span> <span class="hl num">1</span><span class="hl opt">;</span>
+            <span class="hl opt">}</span>
+            System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span><span class="hl str">&quot; --&gt; &quot;</span><span class="hl opt">);</span> System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span>kasus<span class="hl opt">.</span>predicted<span class="hl opt">);</span>
+            System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span><span class="hl str">&quot; ... Actual ... &quot;</span><span class="hl opt">);</span> System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span>kasus<span class="hl opt">.</span>biner<span class="hl opt">);</span>
+            System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">println</span><span class="hl opt">();</span>
+        <span class="hl opt">}</span>
+        totalSample <span class="hl opt">=</span> testList<span class="hl opt">.</span><span class="hl kwd">size</span><span class="hl opt">();</span>
+        System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span><span class="hl str">&quot;Jumlah benar : &quot;</span><span class="hl opt">);</span> System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">println</span><span class="hl opt">(</span>jumlahBenar<span class="hl opt">);</span>
+        System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">print</span><span class="hl opt">(</span><span class="hl str">&quot;Total sample : &quot;</span><span class="hl opt">);</span> System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">println</span><span class="hl opt">(</span>totalSample<span class="hl opt">);</span>
+        System<span class="hl opt">.</span>out<span class="hl opt">.</span><span class="hl kwd">println</span><span class="hl opt">(</span><span class="hl str">&quot;Tingkat Akurasi = &quot;</span> <span class="hl opt">+ ((</span>jumlahBenar <span class="hl opt">*</span> <span class="hl num">100</span><span class="hl opt">) /</span> totalSample<span class="hl opt">) +</span> <span class="hl str">&quot;%&quot;</span><span class="hl opt">);</span>
+<span class="hl slc">//        for (int baris = 0; baris &lt; dataTrain.length; baris++) {</span>
+<span class="hl slc">//            for (int kolom = 0; kolom &lt; 10; kolom++) {</span>
+<span class="hl slc">//                System.out.print(dataTrain[baris][kolom] + &quot;\t|\t&quot;);</span>
+<span class="hl slc">//            }</span>
+<span class="hl slc">//            System.out.println();</span>
+<span class="hl slc">//        }</span>
+<span class="hl slc">//        </span>
+<span class="hl slc">//        for (int baris = 0; baris &lt; binerTrain.length; baris++) {</span>
+<span class="hl slc">//            System.out.println(binerTrain[baris]);</span>
+<span class="hl slc">//            System.out.println(baris+1);</span>
+<span class="hl slc">//        }</span>
+        
+<span class="hl slc">//        for (int baris = 0; baris &lt; dataTest.length; baris++) {</span>
+<span class="hl slc">//            for (int kolom = 0; kolom &lt; 10; kolom++) {</span>
+<span class="hl slc">//                System.out.print(dataTest[baris][kolom] + &quot;\t|\t&quot;);</span>
+<span class="hl slc">//            }</span>
+<span class="hl slc">//            System.out.println(baris+1);</span>
+<span class="hl slc">//            System.out.println();</span>
+<span class="hl slc">//        }</span>
+
+<span class="hl slc">//        for (int baris = 0; baris &lt; binerTest.length; baris++) {</span>
+<span class="hl slc">//            System.out.println(binerTest[baris]);</span>
+<span class="hl slc">//            System.out.println(baris+1);</span>
+<span class="hl slc">//        }</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">static class</span> Kasus <span class="hl opt">{</span>
+        <span class="hl kwb">double</span><span class="hl opt">[]</span> atributKasus<span class="hl opt">;</span>
+        <span class="hl kwb">int</span> biner<span class="hl opt">;</span> <span class="hl slc">// actual output</span>
+        <span class="hl kwb">int</span> predicted<span class="hl opt">;</span> <span class="hl slc">// result of knn algorithm</span>
+        
+        <span class="hl kwa">public</span> <span class="hl kwd">Kasus</span><span class="hl opt">(</span><span class="hl kwb">double</span><span class="hl opt">[]</span> atributKasus<span class="hl opt">,</span> <span class="hl kwb">int</span> biner<span class="hl opt">) {</span>
+            <span class="hl kwa">this</span><span class="hl opt">.</span>atributKasus <span class="hl opt">=</span> atributKasus<span class="hl opt">;</span>
+            <span class="hl kwa">this</span><span class="hl opt">.</span>biner <span class="hl opt">=</span> biner<span class="hl opt">;</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">static class</span> Result <span class="hl opt">{</span>
+        <span class="hl kwb">double</span><span class="hl opt">[]</span> atribut<span class="hl opt">;</span>
+        <span class="hl kwb">double</span> distance<span class="hl opt">;</span>
+        <span class="hl kwb">int</span> biner<span class="hl opt">;</span>
+        
+        <span class="hl kwa">public</span> <span class="hl kwd">Result</span> <span class="hl opt">(</span><span class="hl kwb">double</span><span class="hl opt">[]</span> atribut<span class="hl opt">,</span> <span class="hl kwb">double</span> distance<span class="hl opt">,</span> <span class="hl kwb">int</span> biner<span class="hl opt">) {</span>
+            <span class="hl kwa">this</span><span class="hl opt">.</span>atribut <span class="hl opt">=</span> atribut<span class="hl opt">;</span>
+            <span class="hl kwa">this</span><span class="hl opt">.</span>distance <span class="hl opt">=</span> distance<span class="hl opt">;</span>
+            <span class="hl kwa">this</span><span class="hl opt">.</span>biner <span class="hl opt">=</span> biner<span class="hl opt">;</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+    
+    <span class="hl kwa">static class</span> DistanceComparator <span class="hl kwa">implements</span> Comparator<span class="hl opt">&lt;</span>Result<span class="hl opt">&gt; {</span>
+        <span class="hl kwc">&#64;Override</span>
+        <span class="hl kwa">public</span> <span class="hl kwb">int</span> <span class="hl kwd">compare</span><span class="hl opt">(</span>Result a<span class="hl opt">,</span> Result b<span class="hl opt">) {</span>
+            <span class="hl kwa">return</span> a<span class="hl opt">.</span>distance <span class="hl opt">&lt;</span> b<span class="hl opt">.</span>distance ? <span class="hl opt">-</span><span class="hl num">1</span> <span class="hl opt">:</span> a<span class="hl opt">.</span>distance <span class="hl opt">==</span> b<span class="hl opt">.</span>distance ? <span class="hl num">0</span> <span class="hl opt">:</span> <span class="hl num">1</span><span class="hl opt">;</span>
+        <span class="hl opt">}</span>
+    <span class="hl opt">}</span>
+<span class="hl opt">}</span>
+</pre>
+</body>
+</html>
+<!--HTML generated by highlight 3.33, http://www.andre-simon.de/-->
